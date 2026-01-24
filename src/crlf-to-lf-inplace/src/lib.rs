@@ -17,6 +17,10 @@ pub fn crlf_to_lf_inplace_bytes(buf: &mut [u8]) -> usize {
     }
 
     let ptr = buf.as_mut_ptr();
+    // memchr_iter only keeps raw pointers and advances its start forward; it does
+    // not cache or reuse any data between next() calls. We only write to bytes
+    // strictly before that moving start, so it never reads data we've already
+    // compacted. Just in case to prove, tests below cover \r\n chains.
     let mut iter = memchr_iter(b'\r', buf);
 
     // Find first CRLF
@@ -123,5 +127,11 @@ mod tests {
         // \r\r\n should become \r\n (first \r is lone, second is part of CRLF)
         assert_bytes(b"\r\r\n", b"\r\n");
         assert_string("\r\r\n", "\r\n");
+    }
+
+    #[test]
+    fn consecutive_crlf_chains() {
+        assert_bytes(b"a\r\n\r\n\r\nb", b"a\n\n\nb");
+        assert_string("a\r\n\r\n\r\nb", "a\n\n\nb");
     }
 }
