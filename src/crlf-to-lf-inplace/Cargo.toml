@@ -17,7 +17,7 @@ memchr = { version = "2.7.4", default-features = false, features = ["alloc"] }
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dev-dependencies]
-criterion = "0.7.0"
+criterion = "0.8.1"
 
 
 # Benchmark Stuff
