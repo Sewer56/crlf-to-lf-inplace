@@ -63,7 +63,7 @@ assert_eq!(buffer.as_slice(), b"foo\nbar\nbaz\n");
 ## Performance
 
 Benchmarked on AMD Ryzen 9 9950X3D (single-threaded) with ~71 KiB of concatenated Markdown
-files (29 files from real documentation):
+files (29 files from real opencode configuration):
 
 | Input Type               | Time    | Throughput |
 | ------------------------ | ------- | ---------- |

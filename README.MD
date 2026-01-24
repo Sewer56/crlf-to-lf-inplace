@@ -27,14 +27,14 @@ See the [crlf-to-lf-inplace crate documentation](./src/crlf-to-lf-inplace/README
 ## Performance
 
 Benchmarked on AMD Ryzen 9 9950X3D (single-threaded) with ~71 KiB of concatenated Markdown
-files (29 files from real documentation):
+files (29 files from real opencode configuration):
 
 | Input Type               | Time    | Throughput |
 | ------------------------ | ------- | ---------- |
 | CRLF (conversion needed) | 9.72 µs | 7.2 GiB/s  |
 | LF only (no conversion)  | 378 ns  | 179 GiB/s  |
 
-The benchmark data consists of real-world Markdown documentation files, providing a
+The benchmark data consists of [markdown configuration files (opencode)](https://github.com/Sewer56/crlf-to-lf-inplace/tree/main/src/crlf-to-lf-inplace/benches/fixtures/opencode-config), providing a
 realistic mix of text content and line endings.
 
 ## Crates
