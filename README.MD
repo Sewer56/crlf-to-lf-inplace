@@ -24,6 +24,19 @@ assert_eq!(text, "line1\nline2\n");
 ```
 See the [crlf-to-lf-inplace crate documentation](./src/crlf-to-lf-inplace/README.MD) for detailed usage.
 
+## Performance
+
+Benchmarked on AMD Ryzen 9 9950X3D (single-threaded) with ~71 KiB of concatenated Markdown
+files (29 files from real documentation):
+
+| Input Type               | Time    | Throughput |
+| ------------------------ | ------- | ---------- |
+| CRLF (conversion needed) | 9.72 µs | 7.2 GiB/s  |
+| LF only (no conversion)  | 378 ns  | 179 GiB/s  |
+
+The benchmark data consists of real-world Markdown documentation files, providing a
+realistic mix of text content and line endings.
+
 ## Crates
 
 - [crlf-to-lf-inplace](./src/crlf-to-lf-inplace/README.MD): In-place CRLF → LF conversion for strings/byte slices with a no-std friendly core.

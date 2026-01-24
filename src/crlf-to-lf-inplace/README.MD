@@ -31,9 +31,9 @@ crlf-to-lf-inplace = { version = "0.1.0", default-features = false }
 
 ### Feature Flags
 
-| Feature | Description |
-| ------- | ----------- |
-| `std` | Enable standard library support (disabled by default for `no_std` compatibility) |
+| Feature | Description                                                                      |
+| ------- | -------------------------------------------------------------------------------- |
+| `std`   | Enable standard library support (disabled by default for `no_std` compatibility) |
 
 ## Usage
 
@@ -58,6 +58,26 @@ let mut buffer = b"foo\r\nbar\r\nbaz\r\n".to_vec();
 let new_len = crlf_to_lf_inplace_bytes(&mut buffer);
 buffer.truncate(new_len);
 assert_eq!(buffer.as_slice(), b"foo\nbar\nbaz\n");
+```
+
+## Performance
+
+Benchmarked on AMD Ryzen 9 9950X3D (single-threaded) with ~71 KiB of concatenated Markdown
+files (29 files from real documentation):
+
+| Input Type               | Time    | Throughput |
+| ------------------------ | ------- | ---------- |
+| CRLF (conversion needed) | 9.72 µs | 7.2 GiB/s  |
+| LF only (no conversion)  | 378 ns  | 179 GiB/s  |
+
+The implementation uses `memchr` for fast `\r` scanning with a two-phase approach:
+first locating the initial CRLF, then processing remaining matches. Files already
+using LF line endings benefit from an early-exit path.
+
+Run benchmarks with:
+
+```bash
+cargo bench
 ```
 
 ## License
