@@ -79,7 +79,7 @@ body:
     attributes:
       label: "crlf-to-lf-inplace version"
       description: The version of crlf-to-lf-inplace you're using
-      placeholder: e.g. 0.1.0
+      placeholder: e.g. 0.2.0
     validations:
       required: true
 

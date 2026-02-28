@@ -12,7 +12,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-crlf-to-lf-inplace = "0.1.0"
+crlf-to-lf-inplace = "0.2.0"
 ```
 
 ```rust

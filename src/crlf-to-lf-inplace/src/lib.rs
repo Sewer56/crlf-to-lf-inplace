@@ -6,11 +6,11 @@ extern crate alloc;
 use alloc::string::String;
 use memchr::memchr_iter;
 
-/// Convert CRLF sequences to LF in-place within a byte slice.
+/// Convert CRLF sequences to LF in-place within a UTF-8 byte slice.
 ///
 /// Returns the new length after in-place compaction.
 #[inline]
-pub fn crlf_to_lf_inplace_bytes(buf: &mut [u8]) -> usize {
+pub fn crlf_to_lf_inplace_utf8_bytes(buf: &mut [u8]) -> usize {
     let len = buf.len();
     if len < 2 {
         return len;
@@ -67,21 +67,21 @@ pub fn crlf_to_lf_inplace_bytes(buf: &mut [u8]) -> usize {
 /// Convert CRLF sequences to LF in-place within a [`String`].
 #[inline]
 pub fn crlf_to_lf_inplace(s: &mut String) {
-    // Safety: `crlf_to_lf_inplace_bytes` only removes `\r` bytes that are
+    // Safety: `crlf_to_lf_inplace_utf8_bytes` only removes `\r` bytes that are
     // immediately followed by `\n`, so UTF-8 validity is preserved.
     let bytes = unsafe { s.as_mut_vec() };
-    let new_len = crlf_to_lf_inplace_bytes(bytes);
+    let new_len = crlf_to_lf_inplace_utf8_bytes(bytes);
     s.truncate(new_len);
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{crlf_to_lf_inplace, crlf_to_lf_inplace_bytes};
+    use super::{crlf_to_lf_inplace, crlf_to_lf_inplace_utf8_bytes};
     use alloc::string::ToString;
 
     fn assert_bytes(input: &[u8], expected: &[u8]) {
         let mut buffer = input.to_vec();
-        let new_len = crlf_to_lf_inplace_bytes(&mut buffer);
+        let new_len = crlf_to_lf_inplace_utf8_bytes(&mut buffer);
         assert_eq!(new_len, expected.len());
         assert_eq!(&buffer[..new_len], expected);
     }

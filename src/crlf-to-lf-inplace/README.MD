@@ -19,14 +19,14 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-crlf-to-lf-inplace = "0.1.0"
+crlf-to-lf-inplace = "0.2.0"
 ```
 
 No-std builds can disable the default `std` feature:
 
 ```toml
 [dependencies]
-crlf-to-lf-inplace = { version = "0.1.0", default-features = false }
+crlf-to-lf-inplace = { version = "0.2.0", default-features = false }
 ```
 
 ### Feature Flags
@@ -37,7 +37,7 @@ crlf-to-lf-inplace = { version = "0.1.0", default-features = false }
 
 ## Usage
 
-Use [`crlf_to_lf_inplace`] for `String` values, or [`crlf_to_lf_inplace_bytes`] for raw byte buffers. The byte-slice API returns the new logical length, so truncate or slice the buffer using the returned length.
+Use [`crlf_to_lf_inplace`] for `String` values, or [`crlf_to_lf_inplace_utf8_bytes`] for raw UTF-8 byte buffers. The byte-slice API returns the new logical length, so truncate or slice the buffer using the returned length.
 
 ### Basic Example
 
@@ -52,10 +52,10 @@ assert_eq!(text, "line1\nline2\n");
 ### Advanced Example
 
 ```rust
-use crlf_to_lf_inplace::crlf_to_lf_inplace_bytes;
+use crlf_to_lf_inplace::crlf_to_lf_inplace_utf8_bytes;
 
 let mut buffer = b"foo\r\nbar\r\nbaz\r\n".to_vec();
-let new_len = crlf_to_lf_inplace_bytes(&mut buffer);
+let new_len = crlf_to_lf_inplace_utf8_bytes(&mut buffer);
 buffer.truncate(new_len);
 assert_eq!(buffer.as_slice(), b"foo\nbar\nbaz\n");
 ```
@@ -79,6 +79,25 @@ Run benchmarks with:
 ```bash
 cargo bench
 ```
+
+## UTF-8 Safety
+
+This crate only handles Rust's standard UTF-8 encoding.
+
+The 'trick' is below:
+
+| Code point range   | Byte 1     | Byte 2     | Byte 3     | Byte 4     | Code points |
+| ------------------ | ---------- | ---------- | ---------- | ---------- | ----------- |
+| U+0000 - U+007F    | `0xxxxxxx` |            |            |            | 128         |
+| U+0080 - U+07FF    | `110xxxxx` | `10xxxxxx` |            |            | 1920        |
+| U+0800 - U+FFFF    | `1110xxxx` | `10xxxxxx` | `10xxxxxx` |            | 61440       |
+| U+10000 - U+10FFFF | `11110xxx` | `10xxxxxx` | `10xxxxxx` | `10xxxxxx` | 1048576     |
+
+Bytes `0x00-0x7F` (ASCII) are always single-byte UTF8.  
+Bytes `0x00-0x7F` cannot be follow-up bytes.
+
+That means our lovely friends `\r` (0x0D) and `\n` (0x0A) can be easily be found
+by searching their single byte directly. 😉
 
 ## License
 
